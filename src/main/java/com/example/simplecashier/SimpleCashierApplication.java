@@ -104,4 +104,20 @@ public class SimpleCashierApplication {
     public ResponseEntity<List<String>> getTransactions() {
         return ResponseEntity.ok(transactions);
     }
+
+    @GetMapping("/metrics")
+
+    public ResponseEntity<Map<String, Object>> getMetrics() {
+
+        Map<String, Object> metrics = new HashMap<>();
+
+        metrics.put("totalAccounts", balances.size());
+
+        metrics.put("totalTransactions", transactions.size());
+
+        metrics.put("systemStatus", "OK");
+
+        return ResponseEntity.ok(metrics);
+
+    }
 }
