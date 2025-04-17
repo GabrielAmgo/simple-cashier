@@ -1,0 +1,35 @@
+name: Stress Test
+
+on:
+  push:
+    branches: [ main ] # Execute este workflow em pushes para a branch principal
+  pull_request:
+    branches: [ main ] # Execute este workflow em pull requests para a branch principal
+  workflow_dispatch: # Permite executar este workflow manualmente
+
+jobs:
+  stress_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.20' # Ou a versão desejada
+
+      - name: Install k6
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ca-certificates gnupg
+          echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee /etc/apt/sources.list.d/grafana.list
+          curl https://apt.grafana.com/gpg.key | sudo tee /etc/apt/keyrings/grafana.gpg
+          sudo agipt-get update
+          sudo apt-get install -y k6
+
+      - name: Run k6 stress test
+        run: k6 run loadtest.js
+        env:
+          K6_OUT: stdout
